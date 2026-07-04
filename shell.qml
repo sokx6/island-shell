@@ -5,6 +5,7 @@ import Quickshell.Io
 import IslandBackend
 import qs.services
 import qs.modules.ii.bar
+import qs.modules.ii.sidebarRight
 
 Scope {
     id: shellRoot
@@ -222,4 +223,7 @@ Scope {
     Bar {
         shellRootRef: shellRoot
     }
+
+    // end4 right sidebar (notification center + quick settings)
+    SidebarRight {}
 }
