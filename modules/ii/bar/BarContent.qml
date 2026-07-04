@@ -12,7 +12,7 @@ import qs.modules.common.functions
 Item { // Bar content region
     id: root
 
-    // ponytail: island capsule width, set by Bar.qml from shell root
+    // ponytail: island capsule width, bound from barRoot PanelWindow
     property real islandCapsuleWidth: 140
 
     property var screen: root.QsWindow.window?.screen

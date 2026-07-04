@@ -13,16 +13,8 @@ import qs.modules.common.widgets
 Scope {
     id: bar
     property bool showBarBackground: Config.options.bar.showBackground
-    // ponytail: per-screen island capsule width, updated from shell root
-    property real islandCapsuleWidth: 140
-    property string currentScreenName: ""
-
-    // ponytail: read this screen's island capsule width from shell root
+    // ponytail: shell root reference for per-screen island capsule width lookup
     property var shellRootRef: null
-    function updateIslandCapsuleWidth() {
-        if (!shellRootRef) return
-        islandCapsuleWidth = shellRootRef.getIslandCapsuleWidth(currentScreenName)
-    }
 
     Variants {
         // For each monitor
@@ -41,17 +33,18 @@ Scope {
                 id: barRoot
                 screen: barLoader.modelData
 
-                // ponytail: update islandCapsuleWidth per-screen from shell root
+                // ponytail: per-instance island capsule width for this screen
+                property real islandCapsuleWidth: 140
+                function updateIslandCapsuleWidth() {
+                    if (!bar.shellRootRef) return
+                    var name = barRoot.screen?.name ?? ""
+                    islandCapsuleWidth = bar.shellRootRef.getIslandCapsuleWidth(name)
+                }
                 Connections {
                     target: bar.shellRootRef
-                    function onIslandCapsuleWidthsChanged() {
-                        bar.updateIslandCapsuleWidth()
-                    }
+                    function onIslandCapsuleWidthsChanged() { barRoot.updateIslandCapsuleWidth() }
                 }
-                onScreenChanged: {
-                    bar.currentScreenName = screen?.name ?? ""
-                    bar.updateIslandCapsuleWidth()
-                }
+                onScreenChanged: barRoot.updateIslandCapsuleWidth()
 
                 Timer {
                     id: showBarTimer
@@ -97,12 +90,10 @@ Scope {
                     bottom: (Config.options.interactions.deadPixelWorkaround.enable && barRoot.anchors.bottom) * -1
                 }
 
-                // Include in focus grab
+                // Include in focus grab + island capsule width init
                 Component.onCompleted: {
                     GlobalFocusGrab.addPersistent(barRoot);
-                    // ponytail: update islandCapsuleWidth per-screen from shell root
-                    bar.currentScreenName = screen?.name ?? ""
-                    bar.updateIslandCapsuleWidth()
+                    barRoot.updateIslandCapsuleWidth()
                 }
                 Component.onDestruction: {
                     GlobalFocusGrab.removePersistent(barRoot);
@@ -128,7 +119,7 @@ Scope {
 
                     BarContent {
                         id: barContent
-                        islandCapsuleWidth: bar.islandCapsuleWidth
+                        islandCapsuleWidth: barRoot.islandCapsuleWidth
                         
                         implicitHeight: Appearance.sizes.barHeight
                         anchors {
