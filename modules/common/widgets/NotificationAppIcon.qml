@@ -13,6 +13,17 @@ MaterialShape { // App icon
     property var urgency: NotificationUrgency.Normal
     property bool isUrgent: urgency === NotificationUrgency.Critical
     property var image: ""
+
+    // ponytail: cache resolved icon values to prevent flicker during delete animation
+    // when notification object is destroyed and properties revert to defaults
+    property string cachedAppIcon: ""
+    property string cachedImage: ""
+    Component.onCompleted: {
+        cachedAppIcon = appIcon
+        cachedImage = (image && !image.startsWith("image://icon/")) ? image : ""
+    }
+    onAppIconChanged: if (appIcon && appIcon.length > 0) cachedAppIcon = appIcon
+    onImageChanged: if (image && image.length > 0 && !image.startsWith("image://icon/")) cachedImage = image
     property real materialIconScale: 0.57
     property real appIconScale: 0.8
     property real smallAppIconScale: 0.49
@@ -30,7 +41,7 @@ MaterialShape { // App icon
     color: isUrgent ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSecondaryContainer
     Loader {
         id: materialSymbolLoader
-        active: root.appIcon == "" && root.image == ""
+        active: root.cachedAppIcon == "" && root.cachedImage == ""
         anchors.fill: parent
         sourceComponent: MaterialSymbol {
             text: {
@@ -49,18 +60,18 @@ MaterialShape { // App icon
     Loader {
         id: appIconLoader
         // ponytail: only active when appIcon exists AND has a valid theme icon
-        active: root.image == "" && root.appIcon != "" && Quickshell.hasThemeIcon(root.appIcon)
+        active: root.cachedImage == "" && root.cachedAppIcon != "" && Quickshell.hasThemeIcon(root.cachedAppIcon)
         anchors.centerIn: parent
         sourceComponent: IconImage {
             id: appIconImage
             implicitSize: root.appIconSize
             asynchronous: true
-            source: Quickshell.iconPath(root.appIcon, "")
+            source: Quickshell.iconPath(root.cachedAppIcon, "")
         }
     }
     // ponytail: fallback to MaterialSymbol when appIcon has no theme icon
     Loader {
-        active: root.image == "" && root.appIcon != "" && !Quickshell.hasThemeIcon(root.appIcon)
+        active: root.cachedImage == "" && root.cachedAppIcon != "" && !Quickshell.hasThemeIcon(root.cachedAppIcon)
         anchors.fill: parent
         sourceComponent: MaterialSymbol {
             text: NotificationUtils.findSuitableMaterialSymbol(root.summary)
@@ -74,7 +85,7 @@ MaterialShape { // App icon
     Loader {
         id: notifImageLoader
         // ponytail: ignore image://icon/ URLs — they're app icons, not notification images
-        active: root.image != "" && !root.image.startsWith("image://icon/")
+        active: root.cachedImage != ""
         anchors.fill: parent
         sourceComponent: Item {
             anchors.fill: parent
