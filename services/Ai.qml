@@ -137,7 +137,11 @@ Singleton {
                     "function": {
                         "name": "get_shell_config",
                         "description": "Get the desktop shell config file contents",
-                        "parameters": {}
+                        "parameters": {
+                            "type": "object",
+                            "properties": {},
+                            "additionalProperties": false
+                        }
                     },
                 },
                 {
@@ -189,7 +193,11 @@ Singleton {
                     "function": {
                         "name": "get_shell_config",
                         "description": "Get the desktop shell config file contents",
-                        "parameters": {}
+                        "parameters": {
+                            "type": "object",
+                            "properties": {},
+                            "additionalProperties": false
+                        }
                     },
                 },
                 {

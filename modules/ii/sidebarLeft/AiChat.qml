@@ -27,7 +27,11 @@ Item {
     }
 
     Keys.onPressed: event => {
-        messageInputField.forceActiveFocus();
+        // ponytail: avoid resetting the text input context on every key press;
+        // doing so can interrupt IME preedit/commit for Chinese input methods.
+        if (!messageInputField.activeFocus) {
+            messageInputField.forceActiveFocus();
+        }
         if (event.modifiers === Qt.NoModifier) {
             if (event.key === Qt.Key_PageUp) {
                 messageListView.contentY = Math.max(0, messageListView.contentY - messageListView.height / 2);
@@ -515,6 +519,7 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
                         id: messageInputField
                         anchors.fill: parent
                         wrapMode: TextArea.Wrap
+                        inputMethodHints: Qt.ImhNone
                         padding: 10
                         color: activeFocus ? Appearance.m3colors.m3onSurface : Appearance.m3colors.m3onSurfaceVariant
                         placeholderText: Translation.translate('Message the model... "%1" for commands').arg(root.commandPrefix)
@@ -636,7 +641,18 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
                             text = "";
                         }
 
+                        function hasPreeditText() {
+                            return typeof messageInputField.preeditText === "string" && messageInputField.preeditText.length > 0;
+                        }
+
+                        Keys.priority: Keys.AfterItem
                         Keys.onPressed: event => {
+                            // ponytail: do not steal candidate navigation or commit
+                            // keys from Chinese/Japanese/Korean input methods.
+                            if (messageInputField.hasPreeditText()) {
+                                event.accepted = false;
+                                return;
+                            }
                             if (event.key === Qt.Key_Tab) {
                                 suggestions.acceptSelectedWord();
                                 event.accepted = true;
