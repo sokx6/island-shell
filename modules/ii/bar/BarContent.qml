@@ -137,8 +137,7 @@ Item { // Bar content region
         BarGroup {
             id: leftCenterGroup
             anchors.verticalCenter: parent.verticalCenter
-            // ponytail: was implicitWidth: root.centerSideModuleWidth (fixed width caused extra padding)
-            // Now uses BarGroup's default: gridLayout.implicitWidth + padding * 2
+            implicitWidth: root.centerSideModuleWidth
 
             Resources {
                 alwaysShowAllResources: root.useShortenedForm === 2
@@ -162,8 +161,7 @@ Item { // Bar content region
         MouseArea {
             id: rightCenterGroup
             anchors.verticalCenter: parent.verticalCenter
-            // ponytail: was implicitWidth: root.centerSideModuleWidth (fixed width caused extra padding)
-            implicitWidth: rightCenterGroupContent.implicitWidth
+            implicitWidth: root.centerSideModuleWidth
             implicitHeight: rightCenterGroupContent.implicitHeight
 
             onPressed: {
