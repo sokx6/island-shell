@@ -96,7 +96,7 @@ PanelWindow {
     focusable: islandContainer.wallpaperPickerLayerVisible
         || islandContainer.expandedPlayerKeyboardFocusRequested
         || (root.monitorFocused && (root.overviewVisible || root.connectivityPromptActive))
-    WlrLayershell.layer: WlrLayer.Top
+    WlrLayershell.layer: WlrLayer.Overlay // ponytail: was Top, changed to Overlay to avoid popup flicker
     WlrLayershell.keyboardFocus: {
         if (islandContainer.wallpaperPickerLayerVisible)
             return WlrKeyboardFocus.Exclusive;
