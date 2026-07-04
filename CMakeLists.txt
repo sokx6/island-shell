@@ -68,6 +68,7 @@ target_link_libraries(IslandBackend PRIVATE
 )
 
 # Installation Rules
+# Install to /usr (not /usr/local) so Qt finds IslandBackend in its default QML import path
 include(GNUInstallDirs)
 
 # Install IslandBackend backing library to /usr/lib

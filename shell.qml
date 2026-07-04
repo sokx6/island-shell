@@ -17,21 +17,31 @@ Scope {
 
     function forEachWindow(callback) {
         const windows = panelVariants.instances ? panelVariants.instances : [];
+        let count = 0;
         for (let index = 0; index < windows.length; index++) {
             const window = windows[index];
-            if (window)
+            if (window) {
                 callback(window);
+                count++;
+            }
         }
+        return count;
     }
 
     function showNotificationAll(appName, summary, body) {
-        if (focusEnabled)
+        console.log(`[Shell] showNotificationAll: app="${appName}" summary="${summary}" body="${body}" focusEnabled=${focusEnabled}`);
+        if (focusEnabled) {
+            console.log("[Shell] showNotificationAll: suppressed (focusEnabled/DND)");
             return;
+        }
 
-        shellRoot.forEachWindow((window) => {
-            if (window && window.showNotification)
+        const count = shellRoot.forEachWindow((window) => {
+            if (window && window.showNotification) {
                 window.showNotification(appName, summary, body);
+                console.log(`[Shell] showNotification: dispatched to window screen=${window.screen?.name ?? "?"}`);
+            }
         });
+        console.log(`[Shell] showNotificationAll: dispatched to ${count} window(s)`);
     }
 
     function anyOverviewOpen() {
@@ -46,23 +56,29 @@ Scope {
     }
 
     function prepareOverviewAll() {
+        console.log("[Shell] prepareOverviewAll");
         shellRoot.forEachWindow((window) => window.prepareOverview());
     }
 
     function cancelPreparedOverviewAll() {
+        console.log("[Shell] cancelPreparedOverviewAll");
         shellRoot.forEachWindow((window) => window.cancelPreparedOverview());
     }
 
     function openOverviewAll() {
+        console.log("[Shell] openOverviewAll");
         shellRoot.forEachWindow((window) => window.openOverview());
     }
 
     function closeOverviewAll() {
+        console.log("[Shell] closeOverviewAll");
         shellRoot.forEachWindow((window) => window.closeOverview());
     }
 
     function toggleOverviewAll() {
-        if (shellRoot.anyOverviewOpen())
+        const anyOpen = shellRoot.anyOverviewOpen();
+        console.log(`[Shell] toggleOverviewAll: anyOpen=${anyOpen}`);
+        if (anyOpen)
             shellRoot.closeOverviewAll();
         else
             shellRoot.openOverviewAll();
@@ -143,18 +159,20 @@ Scope {
         target: Notifications
 
         function onNotify(notif) {
-            if (focusEnabled)
-                return;
-
+            console.log(`[Shell] onNotify: id=${notif.notificationId} app="${notif.appName}" summary="${notif.summary}" body="${notif.body}" urgency=${notif.urgency} popup=${notif.popup} transient=${notif.isTransient}`);
             shellRoot.showNotificationAll(notif.appName, notif.summary, notif.body);
         }
     }
 
     Component.onDestruction: {
+        console.log("[Shell] onDestruction: shutting down");
         shuttingDown = true;
     }
 
     Component.onCompleted: {
+        console.log("[Shell] onCompleted: shell root initializing");
+        console.log(`[Shell] screens: ${Quickshell.screens.length} (${Quickshell.screens.map(s => s.name).join(", ")})`);
+        console.log(`[Shell] shellDir: ${Quickshell.shellDir}`);
         // Note: NOT calling SystemServices.ensureSetupComplete() (tide-island-setup binary not built)
         // NOT calling SystemServices.requestScreenRecordingSnapshot() (not needed Stage 1)
     }
