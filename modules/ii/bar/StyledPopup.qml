@@ -46,7 +46,10 @@ LazyLoader {
                     if (!popupWindow.visible || !root.hoverTarget) return 0;
                     return root.QsWindow?.mapFromItem(
                         root.hoverTarget, 
-                        (root.hoverTarget.width - popupBackground.implicitWidth) / 2, 0
+                        // ponytail: center the whole popup window around the
+                        // target. Centering only popupBackground ignores the
+                        // elevation margins and shifts the visible panel right.
+                        (root.hoverTarget.width - popupWindow.implicitWidth) / 2, 0
                     )?.x ?? 0;
                 }
                 return Appearance.sizes.verticalBarWidth
