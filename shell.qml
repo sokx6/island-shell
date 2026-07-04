@@ -6,6 +6,7 @@ import IslandBackend
 import qs.services
 import qs.modules.ii.bar
 import qs.modules.ii.sidebarRight
+import qs.modules.ii.sidebarLeft
 import qs.modules.ii.lock
 import qs.modules.ii.polkit
 import qs.modules.ii.sessionScreen
@@ -231,6 +232,9 @@ Scope {
 
     // end4 right sidebar (notification center + quick settings)
     SidebarRight {}
+
+    // end4 left sidebar (AI chat + translator)
+    SidebarLeft {}
 
     // end4 session modules
     Lock {}

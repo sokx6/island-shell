@@ -29,8 +29,22 @@ RippleButton {
         GlobalStates.sidebarLeftOpen = !GlobalStates.sidebarLeftOpen;
     }
 
-    // ponytail: removed Connections to Ai/Booru (services not copied for Stage 3)
-    // ping functionality deferred to when AI sidebar is implemented
+    // ponytail: restored Ai/Booru Connections (services now copied)
+    Connections {
+        target: Ai
+        function onResponseFinished() {
+            if (GlobalStates.sidebarLeftOpen) return;
+            root.showPing = true;
+        }
+    }
+
+    Connections {
+        target: Booru
+        function onResponseFinished() {
+            if (GlobalStates.sidebarLeftOpen) return;
+            root.showPing = true;
+        }
+    }
 
     Connections {
         target: GlobalStates
