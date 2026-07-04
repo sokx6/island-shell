@@ -48,13 +48,27 @@ MaterialShape { // App icon
     }
     Loader {
         id: appIconLoader
-        active: root.image == "" && root.appIcon != ""
+        // ponytail: only active when appIcon exists AND has a valid theme icon
+        active: root.image == "" && root.appIcon != "" && Quickshell.hasThemeIcon(root.appIcon)
         anchors.centerIn: parent
         sourceComponent: IconImage {
             id: appIconImage
             implicitSize: root.appIconSize
             asynchronous: true
-            source: Quickshell.iconPath(root.appIcon, "image-missing")
+            source: Quickshell.iconPath(root.appIcon, "")
+        }
+    }
+    // ponytail: fallback to MaterialSymbol when appIcon has no theme icon
+    Loader {
+        active: root.image == "" && root.appIcon != "" && !Quickshell.hasThemeIcon(root.appIcon)
+        anchors.fill: parent
+        sourceComponent: MaterialSymbol {
+            text: NotificationUtils.findSuitableMaterialSymbol(root.summary)
+            anchors.fill: parent
+            color: isUrgent ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnSecondaryContainer
+            iconSize: root.materialIconSize
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
     }
     Loader {
