@@ -73,10 +73,33 @@ Scope {
             return
         }
 
+        // Stop old process before starting new one (avoids screen-root conflict)
+        if (process.running) {
+            console.log(`[WallpaperEngine] stopping old process: ${reason}`)
+            process.running = false
+            // Delay start to let old process exit
+            restartTimer.restart()
+            return
+        }
+
+        startProcess(reason)
+    }
+
+    function startProcess(reason) {
         const args = command()
         lastCommandLine = args.join(" ")
         console.log(`[WallpaperEngine] starting: ${reason} → ${lastCommandLine}`)
         process.exec(args)
+    }
+
+    Timer {
+        id: restartTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            if (shouldRun())
+                root.startProcess("restart-after-stop")
+        }
     }
 
     function restart() { refresh("manual-restart") }
