@@ -43,18 +43,14 @@ Scope {
 
                 // ponytail: update islandCapsuleWidth per-screen from shell root
                 Connections {
-                    target: bar
+                    target: bar.shellRootRef
                     function onIslandCapsuleWidthsChanged() {
-                        if (bar.currentScreenName === (barRoot.screen?.name ?? ""))
-                            bar.updateIslandCapsuleWidth()
-                    }
-                }
-                function updateScreenName() {
-                    var name = barRoot.screen?.name ?? ""
-                    if (bar.currentScreenName !== name) {
-                        bar.currentScreenName = name
                         bar.updateIslandCapsuleWidth()
                     }
+                }
+                onScreenChanged: {
+                    bar.currentScreenName = screen?.name ?? ""
+                    bar.updateIslandCapsuleWidth()
                 }
 
                 Timer {
