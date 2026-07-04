@@ -33,26 +33,17 @@ Scope {
         }
 
         onVisibleChanged: {
+            console.log("[SidebarRight] onVisibleChanged: " + visible)
             if (visible) {
-                // ponytail: delay GlobalFocusGrab to prevent opening click from being
-                // detected as "outside" click, causing immediate dismissal
-                focusGrabDelay.restart()
+                GlobalFocusGrab.addDismissable(panelWindow);
             } else {
                 GlobalFocusGrab.removeDismissable(panelWindow);
-            }
-        }
-        Timer {
-            id: focusGrabDelay
-            interval: 200
-            repeat: false
-            onTriggered: {
-                if (panelWindow.visible)
-                    GlobalFocusGrab.addDismissable(panelWindow);
             }
         }
         Connections {
             target: GlobalFocusGrab
             function onDismissed() {
+                console.log("[SidebarRight] GlobalFocusGrab dismissed → hide")
                 panelWindow.hide();
             }
         }

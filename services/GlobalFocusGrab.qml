@@ -42,6 +42,7 @@ Singleton {
     function addDismissable(window) {
         if (root.dismissable.indexOf(window) === -1) {
             root.dismissable.push(window);
+            console.log(`[GlobalFocusGrab] addDismissable: ${window} count=${root.dismissable.length}`)
         }
     }
 
@@ -49,6 +50,7 @@ Singleton {
         var index = root.dismissable.indexOf(window);
         if (index !== -1) {
             root.dismissable.splice(index, 1);
+            console.log(`[GlobalFocusGrab] removeDismissable: ${window} count=${root.dismissable.length}`)
         }
     }
 
@@ -65,6 +67,7 @@ Singleton {
         windows: root.dismissable.every(w => !w?.focusable) || root.dismissable.some(w => hasActive(w?.contentItem)) ? [...root.dismissable, ...root.persistent] : [...root.dismissable]
         active: root.dismissable.length > 0
         onCleared: () => {
+            console.log("[GlobalFocusGrab] onCleared → dismiss")
             root.dismiss();
         }
     }
