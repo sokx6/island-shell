@@ -37,7 +37,13 @@ Singleton {
         }
         property string appName: notification?.appName ?? ""
         property string body: notification?.body ?? ""
-        property string image: notification?.image ?? ""
+        property string image: {
+            // ponytail: image://icon/ URLs are app icons, not notification images.
+            // Clear it so NotificationAppIcon uses appIcon path instead of notifImageLoader.
+            var img = notification?.image ?? ""
+            if (img.startsWith("image://icon/")) return ""
+            return img
+        }
         property string summary: notification?.summary ?? ""
         property double time
         property string urgency: notification?.urgency.toString() ?? "normal"
