@@ -13,8 +13,16 @@ import qs.modules.common.widgets
 Scope {
     id: bar
     property bool showBarBackground: Config.options.bar.showBackground
-    // ponytail: island capsule width, passed from shell root for bar integration
+    // ponytail: per-screen island capsule width, updated from shell root
     property real islandCapsuleWidth: 140
+    property string currentScreenName: ""
+
+    // ponytail: read this screen's island capsule width from shell root
+    property var shellRootRef: null
+    function updateIslandCapsuleWidth() {
+        if (!shellRootRef) return
+        islandCapsuleWidth = shellRootRef.getIslandCapsuleWidth(currentScreenName)
+    }
 
     Variants {
         // For each monitor
@@ -32,6 +40,22 @@ Scope {
             component: PanelWindow { // Bar window
                 id: barRoot
                 screen: barLoader.modelData
+
+                // ponytail: update islandCapsuleWidth per-screen from shell root
+                Connections {
+                    target: bar
+                    function onIslandCapsuleWidthsChanged() {
+                        if (bar.currentScreenName === (barRoot.screen?.name ?? ""))
+                            bar.updateIslandCapsuleWidth()
+                    }
+                }
+                function updateScreenName() {
+                    var name = barRoot.screen?.name ?? ""
+                    if (bar.currentScreenName !== name) {
+                        bar.currentScreenName = name
+                        bar.updateIslandCapsuleWidth()
+                    }
+                }
 
                 Timer {
                     id: showBarTimer
@@ -80,6 +104,9 @@ Scope {
                 // Include in focus grab
                 Component.onCompleted: {
                     GlobalFocusGrab.addPersistent(barRoot);
+                    // ponytail: update islandCapsuleWidth per-screen from shell root
+                    bar.currentScreenName = screen?.name ?? ""
+                    bar.updateIslandCapsuleWidth()
                 }
                 Component.onDestruction: {
                     GlobalFocusGrab.removePersistent(barRoot);

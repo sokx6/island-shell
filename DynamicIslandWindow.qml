@@ -30,22 +30,26 @@ PanelWindow {
     readonly property string hyprMonitorName: hyprMonitor && hyprMonitor.name ? String(hyprMonitor.name) : ""
     readonly property bool monitorFocused: hyprMonitor ? hyprMonitor.focused : false
 
-    // ponytail: expose capsule width to shell root for bar integration
-    Binding {
-        when: root.monitorFocused && root.shellRootController && mainCapsule
-        target: root.shellRootController
-        property: "islandCapsuleWidth"
-        value: Math.ceil(mainCapsule.width)
-    }
-
-    // ponytail: debug — log island capsule width changes
-    Connections {
-        target: mainCapsule
-        function onWidthChanged() {
-            if (root.monitorFocused)
-                console.log(`[Island] capsule width=${mainCapsule.width} → shellRoot.islandCapsuleWidth=${root.shellRootController?.islandCapsuleWidth}`)
+    // ponytail: expose capsule width per-screen to shell root for bar integration
+    function updateCapsuleWidth() {
+        if (!root.shellRootController || !mainCapsule || !root.screen) return
+        var name = root.screen.name
+        var w = Math.ceil(mainCapsule.width)
+        var current = root.shellRootController.islandCapsuleWidths[name]
+        if (current !== w) {
+            var widths = JSON.parse(JSON.stringify(root.shellRootController.islandCapsuleWidths))
+            widths[name] = w
+            root.shellRootController.islandCapsuleWidths = widths
+            console.log(`[Island] screen=${name} capsuleWidth=${w}`)
         }
     }
+
+    Connections {
+        target: mainCapsule
+        function onWidthChanged() { root.updateCapsuleWidth() }
+    }
+
+    Component.onCompleted: root.updateCapsuleWidth()
     readonly property bool connectivityPromptActive: controlCenterLoader.item
         ? controlCenterLoader.item.hasConnectivityPrompt
         : false
@@ -66,6 +70,7 @@ PanelWindow {
 
     color: StyleTokens.transparent
     anchors { top: true; left: true; right: true }
+    margins { top: 0 } // ponytail: force top=0, don't let bar's exclusiveZone push island down
     mask: Region {
         // Input is the union of the island's visible surfaces plus a compact top
         // gesture strip. The gesture strip must not grow with expanded content.
@@ -108,7 +113,9 @@ PanelWindow {
             Math.ceil(root.controlCenterWindowHeight)
         )
         : Math.max(Math.ceil(4 + root.connectivityDetailHeight + 12), Math.ceil(root.controlCenterWindowHeight))
-    exclusiveZone: 0 // ponytail: was 4 + userConfig.islandHeight + 3, now 0 to float over bar
+    // ponytail: ExclusionMode.Ignore sends exclusive_zone=-1 to wlr-layer-shell.
+    // Do NOT set exclusiveZone separately — setExclusiveZone() overwrites
+    // exclusionMode back to Normal (see quickshell wlr_layershell.cpp:151).
     exclusionMode: ExclusionMode.Ignore
     aboveWindows: true
     focusable: islandContainer.wallpaperPickerLayerVisible

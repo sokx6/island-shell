@@ -16,9 +16,13 @@ Scope {
 
     readonly property var userConfig: UserConfig
 
-    // Island capsule width — updated by focused screen's DynamicIslandWindow,
-    // read by Bar to squeeze/expand middle placeholder.
-    property real islandCapsuleWidth: 140
+    // Island capsule width — per-screen map. Updated by each DynamicIslandWindow instance.
+    // Bar reads its screen's value to squeeze/expand middle placeholder.
+    property var islandCapsuleWidths: ({})
+
+    function getIslandCapsuleWidth(screenName) {
+        return islandCapsuleWidths[screenName] ?? 140
+    }
 
     function forEachWindow(callback) {
         const windows = panelVariants.instances ? panelVariants.instances : [];
@@ -216,6 +220,6 @@ Scope {
 
     // end4 top bar — manages its own per-screen Variants internally
     Bar {
-        islandCapsuleWidth: shellRoot.islandCapsuleWidth
+        shellRootRef: shellRoot
     }
 }
