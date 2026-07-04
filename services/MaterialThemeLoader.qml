@@ -17,23 +17,22 @@ Singleton {
 
     function reapplyTheme() {
         themeFileView.reload()
-        // ponytail: also poll after startup — onLoadedChanged may not fire if already loaded
-        themePollTimer.pollCount = 0
-        themePollTimer.restart()
+        // ponytail: reload() is async. onLoadedChanged doesn't fire if already loaded.
+        // onTextChanged fires when content changes after reload completes.
     }
 
     function applyColors(fileContent) {
+        if (!fileContent || fileContent.length === 0) return
         const json = JSON.parse(fileContent)
         for (const key in json) {
             if (json.hasOwnProperty(key)) {
-                // Convert snake_case to CamelCase
                 const camelCaseKey = key.replace(/_([a-z])/g, (g) => g[1].toUpperCase())
                 const m3Key = `m3${camelCaseKey}`
                 Appearance.m3colors[m3Key] = json[key]
             }
         }
-        
         Appearance.m3colors.darkmode = (Appearance.m3colors.m3background.hslLightness < 0.5)
+        console.log(`[MaterialThemeLoader] applyColors: darkmode=${Appearance.m3colors.darkmode} bg=${Appearance.m3colors.m3background}`)
     }
 
     function resetFilePathNextTime() {
@@ -61,7 +60,7 @@ Singleton {
         }
     }
 
-	FileView { 
+    FileView { 
         id: themeFileView
         path: Qt.resolvedUrl(root.filePath)
         watchChanges: true
@@ -73,36 +72,18 @@ Singleton {
             const fileContent = themeFileView.text()
             root.applyColors(fileContent)
         }
+        // ponytail: onTextChanged fires when reload() completes and content changes,
+        // even if already loaded (onLoadedChanged won't fire in that case)
+        onTextChanged: {
+            delayedFileRead.start()
+        }
         onLoadFailed: root.resetFilePathNextTime();
     }
 
     function toggleLightDark() {
         const currentlyDark = Appearance.m3colors.darkmode;
         Quickshell.execDetached([Directories.wallpaperSwitchScriptPath, "--mode", currentlyDark ? "light" : "dark", "--noswitch"]);
-        // ponytail: FileView watchChanges may not detect atomic file writes by matugen.
-        // Poll for changes after a delay.
-        themePollTimer.restart();
-    }
-
-    // ponytail: poll colors.json for changes (matugen writes atomically, FileView may miss it)
-    Timer {
-        id: themePollTimer
-        interval: 1000
-        repeat: true
-        property int pollCount: 0
-        onTriggered: {
-            pollCount++
-            themeFileView.reload()
-            const content = themeFileView.text()
-            if (content && content.length > 0) {
-                root.applyColors(content)
-                console.log(`[MaterialThemeLoader] poll #${pollCount}: darkmode=${Appearance.m3colors.darkmode} bg=${Appearance.m3colors.m3background}`)
-            }
-            if (pollCount >= 3) {
-                pollCount = 0
-                running = false
-            }
-        }
+        // ponytail: FileView.onTextChanged + onFileChanged will detect colors.json change
     }
 
     GlobalShortcut {

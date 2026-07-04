@@ -34,9 +34,20 @@ Scope {
 
         onVisibleChanged: {
             if (visible) {
-                GlobalFocusGrab.addDismissable(panelWindow);
+                // ponytail: delay GlobalFocusGrab to prevent opening click from being
+                // detected as "outside" click, causing immediate dismissal
+                focusGrabDelay.restart()
             } else {
                 GlobalFocusGrab.removeDismissable(panelWindow);
+            }
+        }
+        Timer {
+            id: focusGrabDelay
+            interval: 200
+            repeat: false
+            onTriggered: {
+                if (panelWindow.visible)
+                    GlobalFocusGrab.addDismissable(panelWindow);
             }
         }
         Connections {
