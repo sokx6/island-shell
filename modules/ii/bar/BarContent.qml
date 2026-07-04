@@ -65,10 +65,8 @@ Item { // Bar content region
         onScrollDown: Brightness.decreaseBrightness()
         onScrollUp: Brightness.increaseBrightness()
         onMovedAway: GlobalStates.osdBrightnessOpen = false
-        onPressed: event => {
-            if (event.button === Qt.LeftButton)
-                GlobalStates.sidebarLeftOpen = !GlobalStates.sidebarLeftOpen;
-        }
+        // ponytail: removed sidebar toggle on empty space click.
+        // Only LeftSidebarButton should open left sidebar.
 
         // Visual content
         ScrollHint {
@@ -203,8 +201,10 @@ Item { // Bar content region
         onScrollUp: Audio.incrementVolume();
         onMovedAway: GlobalStates.osdVolumeOpen = false;
         onPressed: event => {
+            // ponytail: removed sidebar toggle on empty space click.
+            // Only right sidebar button (RippleButton) should open sidebar.
             if (event.button === Qt.LeftButton) {
-                GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
+                // do nothing — scroll still works for volume
             }
         }
 
