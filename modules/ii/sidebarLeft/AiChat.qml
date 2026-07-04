@@ -14,6 +14,7 @@ import Quickshell.Io
 Item {
     id: root
     property real padding: 4
+    property var scopeRoot: null
     property var inputField: messageInputField
     property string commandPrefix: "/"
 
@@ -523,6 +524,14 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
                         padding: 10
                         color: activeFocus ? Appearance.m3colors.m3onSurface : Appearance.m3colors.m3onSurfaceVariant
                         placeholderText: Translation.translate('Message the model... "%1" for commands').arg(root.commandPrefix)
+                        onActiveFocusChanged: {
+                            if (root.scopeRoot) {
+                                // ponytail: the AI input needs layer-shell
+                                // Exclusive focus for Fcitx preedit/commit, but
+                                // only while this TextArea actually owns focus.
+                                root.scopeRoot.setKeyboardFocusExclusive(activeFocus);
+                            }
+                        }
 
                         background: null
 

@@ -12,6 +12,8 @@ Scope { // Scope
     id: root
     property bool detach: false
     property bool pin: false
+    property bool keyboardFocusExclusive: false
+    property bool sidebarFocusGrabSuspended: false
     property Component contentComponent: SidebarLeftContent {}
     property Item sidebarContent
 
@@ -53,9 +55,55 @@ Scope { // Scope
         }
     }
 
+    Timer {
+        id: sidebarFocusGrabAddTimer
+        interval: 150
+        repeat: false
+        onTriggered: {
+            root.keyboardFocusExclusive = false;
+            root.sidebarFocusGrabSuspended = false;
+            if (!root.detach && sidebarLoader.active && sidebarLoader.item?.visible) {
+                GlobalFocusGrab.addDismissable(sidebarLoader.item);
+            }
+        }
+    }
+
     function togglePin() {
         if (!root.pin) pinWithFunnyHyprlandWorkaroundProc.doIt()
         else root.pin = !root.pin;
+    }
+
+    function setKeyboardFocusExclusive(active) {
+        root.keyboardFocusExclusive = active;
+
+        if (root.detach || !sidebarLoader.active || !sidebarLoader.item) return;
+
+        if (active) {
+            // ponytail: briefly raise the layer to Exclusive so Fcitx can bind
+            // its text input context, then return to OnDemand so outside clicks
+            // can reach HyprlandFocusGrab and close the sidebar.
+            sidebarFocusGrabAddTimer.stop();
+            root.sidebarFocusGrabSuspended = true;
+            GlobalFocusGrab.removeDismissable(sidebarLoader.item);
+            sidebarFocusGrabAddTimer.restart();
+        } else {
+            root.resumeSidebarFocusGrab();
+        }
+    }
+
+    function resumeSidebarFocusGrab() {
+        if (!root.sidebarFocusGrabSuspended) return;
+        root.sidebarFocusGrabSuspended = false;
+
+        if (!root.detach && sidebarLoader.active && sidebarLoader.item?.visible) {
+            GlobalFocusGrab.addDismissable(sidebarLoader.item);
+        }
+    }
+
+    function clearKeyboardFocusState() {
+        sidebarFocusGrabAddTimer.stop();
+        root.keyboardFocusExclusive = false;
+        root.sidebarFocusGrabSuspended = false;
     }
 
     Component.onCompleted: {
@@ -66,6 +114,7 @@ Scope { // Scope
     }
 
     onDetachChanged: {
+        root.clearKeyboardFocusState();
         if (root.detach) {
             GlobalFocusGrab.removeDismissable(sidebarLoader.item) // Remove sidebar from the focus grab system
             sidebarContent.parent = null; // Detach content from sidebar
@@ -100,8 +149,10 @@ Scope { // Scope
             exclusiveZone: root.pin ? sidebarWidth : 0
             implicitWidth: Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin
             WlrLayershell.namespace: "quickshell:sidebarLeft"
-            // Hyprland 0.49: OnDemand is Exclusive, Exclusive just breaks click-outside-to-close
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+            // ponytail: keep OnDemand normally so click-outside dismissal works,
+            // but use Exclusive while the AI input is active so Fcitx can commit
+            // Chinese preedit text into the layer-shell TextArea.
+            WlrLayershell.keyboardFocus: root.keyboardFocusExclusive ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand
             color: "transparent"
 
             anchors {
@@ -116,8 +167,12 @@ Scope { // Scope
 
             onVisibleChanged: {
                 if (visible) {
-                    GlobalFocusGrab.addDismissable(panelWindow);
+                    // ponytail: add the sidebar to the global focus grab after
+                    // the layer has opened; adding it in the same turn can race
+                    // with Hyprland's openlayer focus transition and self-close.
+                    sidebarFocusGrabAddTimer.restart();
                 } else {
+                    root.clearKeyboardFocusState();
                     GlobalFocusGrab.removeDismissable(panelWindow);
                 }
             }
