@@ -207,16 +207,6 @@ Scope {
         }
     }
 
-    // end4 top bar — one per screen
-    Variants {
-        id: barVariants
-
-        model: Quickshell.screens
-
-        Bar {
-            required property var modelData
-
-            screen: modelData
-        }
-    }
+    // end4 top bar — manages its own per-screen Variants internally
+    Bar {}
 }
