@@ -158,15 +158,11 @@ Item { // Bar content region
             height: parent.height
         }
 
-        MouseArea {
+        Item {
             id: rightCenterGroup
             anchors.verticalCenter: parent.verticalCenter
             implicitWidth: root.centerSideModuleWidth
             implicitHeight: rightCenterGroupContent.implicitHeight
-
-            onPressed: {
-                GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
-            }
 
             BarGroup {
                 id: rightCenterGroupContent
@@ -176,6 +172,11 @@ Item { // Bar content region
                     showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
                     Layout.alignment: Qt.AlignVCenter
                     Layout.fillWidth: true
+                    // ponytail: Clock click opens sidebar (was on rightCenterGroup MouseArea)
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen
+                    }
                 }
 
                 UtilButtons {
