@@ -20,8 +20,8 @@ MouseArea {
         if (mouse.button === Qt.RightButton) {
             Weather.getData();
             Quickshell.execDetached(["notify-send", 
-                Translation.tr("Weather"), 
-                Translation.tr("Refreshing (manually triggered)")
+                Translation.translate("Weather"), 
+                Translation.translate("Refreshing (manually triggered)")
                 , "-a", "Shell"
             ])
             mouse.accepted = false

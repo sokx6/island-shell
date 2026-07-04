@@ -47,7 +47,7 @@ StyledPopup {
                 id: temp
                 font.pixelSize: Appearance.font.pixelSize.smaller
                 color: Appearance.colors.colOnSurfaceVariant
-                text: Weather.data.temp + " • " + Translation.tr("Feels like %1").arg(Weather.data.tempFeelsLike)
+                text: Weather.data.temp + " • " + Translation.translate("Feels like %1").arg(Weather.data.tempFeelsLike)
             }
         }
 
@@ -60,42 +60,42 @@ StyledPopup {
             uniformCellWidths: true
 
             WeatherCard {
-                title: Translation.tr("UV Index")
+                title: Translation.translate("UV Index")
                 symbol: "wb_sunny"
                 value: Weather.data.uv
             }
             WeatherCard {
-                title: Translation.tr("Wind")
+                title: Translation.translate("Wind")
                 symbol: "air"
                 value: `(${Weather.data.windDir}) ${Weather.data.wind}`
             }
             WeatherCard {
-                title: Translation.tr("Precipitation")
+                title: Translation.translate("Precipitation")
                 symbol: "rainy_light"
                 value: Weather.data.precip
             }
             WeatherCard {
-                title: Translation.tr("Humidity")
+                title: Translation.translate("Humidity")
                 symbol: "humidity_low"
                 value: Weather.data.humidity
             }
             WeatherCard {
-                title: Translation.tr("Visibility")
+                title: Translation.translate("Visibility")
                 symbol: "visibility"
                 value: Weather.data.visib
             }
             WeatherCard {
-                title: Translation.tr("Pressure")
+                title: Translation.translate("Pressure")
                 symbol: "readiness_score"
                 value: Weather.data.press
             }
             WeatherCard {
-                title: Translation.tr("Sunrise")
+                title: Translation.translate("Sunrise")
                 symbol: "wb_twilight"
                 value: Weather.data.sunrise
             }
             WeatherCard {
-                title: Translation.tr("Sunset")
+                title: Translation.translate("Sunset")
                 symbol: "bedtime"
                 value: Weather.data.sunset
             }
@@ -104,7 +104,7 @@ StyledPopup {
         // Footer: last refresh
         StyledText {
             Layout.alignment: Qt.AlignHCenter
-            text: Translation.tr("Last refresh: %1").arg(Weather.data.lastRefresh)
+            text: Translation.translate("Last refresh: %1").arg(Weather.data.lastRefresh)
             font {
                 weight: Font.Medium
                 pixelSize: Appearance.font.pixelSize.smaller

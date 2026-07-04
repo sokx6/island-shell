@@ -15,7 +15,7 @@ StyledPopup {
         // Header
         StyledPopupHeaderRow {
             icon: "battery_android_full"
-            label: Translation.tr("Battery")
+            label: Translation.translate("Battery")
         }
 
         StyledPopupValueRow {
@@ -25,7 +25,7 @@ StyledPopup {
                 return !(Battery.chargeState == 4 || timeValue <= 0 || power <= 0.01);
             }
             icon: "schedule"
-            label: Battery.isCharging ? Translation.tr("Time to full:") : Translation.tr("Time to empty:")
+            label: Battery.isCharging ? Translation.translate("Time to full:") : Translation.translate("Time to empty:")
             value: {
                 function formatTime(seconds) {
                     var h = Math.floor(seconds / 3600);
@@ -47,11 +47,11 @@ StyledPopup {
             icon: "bolt"
             label: {
                 if (Battery.chargeState == 4) {
-                    return Translation.tr("Fully charged");
+                    return Translation.translate("Fully charged");
                 } else if (Battery.chargeState == 1) {
-                    return Translation.tr("Charging:");
+                    return Translation.translate("Charging:");
                 } else {
-                    return Translation.tr("Discharging:");
+                    return Translation.translate("Discharging:");
                 }
             }
             value: {
@@ -65,7 +65,7 @@ StyledPopup {
 
         StyledPopupValueRow {
             icon: "heart_check"
-            label: Translation.tr("Health:")
+            label: Translation.translate("Health:")
             value: `${(Battery.health).toFixed(1)}%`
         }
     }

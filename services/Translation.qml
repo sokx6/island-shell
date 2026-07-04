@@ -3,9 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 
-// ponytail: stub Translation service — Battery.qml needs tr() for one string.
+// ponytail: stub Translation service — Battery.qml needs translate() for one string.
 // Real i18n + translator deferred to later stage.
+// NOTE: cannot use method name 'tr' or 'qsTr' — reserved by QML engine.
 Singleton {
-    function tr(sourceText) { return sourceText }
-    function qsTr(sourceText) { return sourceText }
+    function translate(sourceText) { return sourceText }
 }

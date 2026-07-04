@@ -71,7 +71,7 @@ Item { // Bar content region
         ScrollHint {
             reveal: barLeftSideMouseArea.hovered
             icon: Hyprsunset.gamma === 100 ? "light_mode" : "wb_twilight"
-            tooltipText: Translation.tr("Scroll to change brightness")
+            tooltipText: Translation.translate("Scroll to change brightness")
             side: "left"
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
@@ -212,7 +212,7 @@ Item { // Bar content region
         ScrollHint {
             reveal: barRightSideMouseArea.hovered
             icon: "volume_up"
-            tooltipText: Translation.tr("Scroll to change volume")
+            tooltipText: Translation.translate("Scroll to change volume")
             side: "right"
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
