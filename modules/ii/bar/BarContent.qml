@@ -172,11 +172,6 @@ Item { // Bar content region
                     showDate: (Config.options.bar.verbose && root.useShortenedForm < 2)
                     Layout.alignment: Qt.AlignVCenter
                     Layout.fillWidth: true
-                    // ponytail: Clock click opens sidebar (was on rightCenterGroup MouseArea)
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen
-                    }
                 }
 
                 UtilButtons {

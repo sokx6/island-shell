@@ -19,7 +19,7 @@ Item {
             leftMargin: root.vertical ? 4 : 0
             rightMargin: root.vertical ? 4 : 0
         }
-        color: Config.options?.bar.borderless ? "transparent" : ColorUtils.mix(Appearance.colors.colLayer1, Appearance.colors.colOnLayer1, 0.06)
+        color: Config.options?.bar.borderless ? "transparent" : (Appearance.m3colors.darkmode ? Appearance.colors.colLayer1 : ColorUtils.mix(Appearance.colors.colLayer1, Appearance.colors.colOnLayer1, 0.06))
         radius: Appearance.rounding.small
     }
 

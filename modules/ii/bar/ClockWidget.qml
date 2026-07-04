@@ -41,6 +41,8 @@ Item {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: !Config.options.bar.tooltips.clickToShow
+        // ponytail: click clock to toggle sidebar
+        onClicked: GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen
 
         ClockWidgetPopup {
             hoverTarget: mouseArea
