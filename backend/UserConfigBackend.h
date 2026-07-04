@@ -43,6 +43,9 @@ class UserConfigBackend final : public QObject {
     Q_PROPERTY(int titleFontSize READ titleFontSize NOTIFY titleFontSizeChanged FINAL)
     Q_PROPERTY(int iconFontSize READ iconFontSize NOTIFY iconFontSizeChanged FINAL)
 
+    // ponytail: configurable theme accent color
+    Q_PROPERTY(QString accentColor READ accentColor NOTIFY accentColorChanged FINAL)
+
 public:
     explicit UserConfigBackend(QObject *parent = nullptr);
 
@@ -73,6 +76,7 @@ public:
     int bodyFontSize() const;
     int titleFontSize() const;
     int iconFontSize() const;
+    QString accentColor() const;
     void setDefaultWallpaperPath(const QString &path);
     void setDefaultTlpSudoPassword(const QString &password);
 
@@ -107,6 +111,7 @@ signals:
     void bodyFontSizeChanged();
     void titleFontSizeChanged();
     void iconFontSizeChanged();
+    void accentColorChanged();
 
 private:
     void scheduleReload();
@@ -141,6 +146,7 @@ private:
     int m_bodyFontSize = 16;
     int m_titleFontSize = 20;
     int m_iconFontSize = 18;
+    QString m_accentColor = QStringLiteral("#0a84ff");
 
     QFileSystemWatcher m_watcher;
     QTimer m_reloadTimer;

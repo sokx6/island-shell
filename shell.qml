@@ -173,8 +173,20 @@ Scope {
         console.log("[Shell] onCompleted: shell root initializing");
         console.log(`[Shell] screens: ${Quickshell.screens.length} (${Quickshell.screens.map(s => s.name).join(", ")})`);
         console.log(`[Shell] shellDir: ${Quickshell.shellDir}`);
+        // Apply configurable accent color from UserConfig to StyleTokens
+        StyleTokens.setAccentColor(UserConfig.accentColor);
+        console.log(`[Shell] accent color applied: ${UserConfig.accentColor}`);
         // Note: NOT calling SystemServices.ensureSetupComplete() (tide-island-setup binary not built)
         // NOT calling SystemServices.requestScreenRecordingSnapshot() (not needed Stage 1)
+    }
+
+    // Re-apply accent color when user changes it in config
+    Connections {
+        target: UserConfig
+        function onAccentColorChanged() {
+            console.log(`[Shell] accent color changed: ${UserConfig.accentColor}`);
+            StyleTokens.setAccentColor(UserConfig.accentColor);
+        }
     }
 
     WallpaperEngine {

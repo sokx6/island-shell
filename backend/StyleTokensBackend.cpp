@@ -52,9 +52,12 @@ STYLE_COLOR(textTertiary, "#7f828a")
 STYLE_COLOR(textDisabled, "#878a92")
 STYLE_COLOR(textSubtle, "#8f9198")
 STYLE_COLOR(textDim, "#b5b7bf")
-STYLE_COLOR(accent, "#0a84ff")
-STYLE_COLOR(accentPressed, "#0066d6")
-STYLE_COLOR(accentSoft, "#6ea8ff")
+
+// ponytail: accent colors are derived from configurable accentColor (m_accent* members)
+QColor StyleTokensBackend::accent() const { return m_accent; }
+QColor StyleTokensBackend::accentPressed() const { return m_accentPressed; }
+QColor StyleTokensBackend::accentSoft() const { return m_accentSoft; }
+
 STYLE_COLOR(success, "#34c759")
 STYLE_COLOR(warning, "#ffcc00")
 STYLE_COLOR(danger, "#ff3b30")
@@ -83,6 +86,40 @@ int StyleTokensBackend::durationFast() const { return 120; }
 int StyleTokensBackend::durationControl() const { return 130; }
 int StyleTokensBackend::durationQuick() const { return 140; }
 int StyleTokensBackend::durationStandard() const { return 280; }
+
+// ponytail: derive accentPressed (darker) and accentSoft (lighter) from a single accent color using HSV
+void StyleTokensBackend::deriveAccent(const QString &hexColor)
+{
+    QColor parsed(hexColor);
+    if (!parsed.isValid()) {
+        qWarning() << "[StyleTokens] invalid accent color:" << hexColor;
+        return;
+    }
+
+    m_accent = parsed.toHsv();
+
+    // accentPressed: 15% darker (lower value)
+    int h = m_accent.hue();
+    int s = m_accent.saturation();
+    int v = m_accent.value();
+    m_accentPressed = QColor::fromHsv(h, s, qMax(0, v - 38));
+
+    // accentSoft: 30% lighter (higher value, lower saturation)
+    m_accentSoft = QColor::fromHsv(h, qMax(0, s - 60), qMin(255, v + 50));
+
+    qDebug() << "[StyleTokens] accent derived:" << hexColor
+             << "→ accent=" << m_accent.name()
+             << "pressed=" << m_accentPressed.name()
+             << "soft=" << m_accentSoft.name();
+
+    emit accentChanged();
+}
+
+void StyleTokensBackend::setAccentColor(const QString &hexColor)
+{
+    qDebug() << "[StyleTokens] setAccentColor:" << hexColor;
+    deriveAccent(hexColor);
+}
 
 #undef STYLE_COLOR
 #undef STYLE_GLOBAL_COLOR

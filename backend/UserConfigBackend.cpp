@@ -235,6 +235,11 @@ int UserConfigBackend::iconFontSize() const
     return m_iconFontSize;
 }
 
+QString UserConfigBackend::accentColor() const
+{
+    return m_accentColor;
+}
+
 void UserConfigBackend::setDefaultWallpaperPath(const QString &path)
 {
     if (m_defaultWallpaperPath == path)
@@ -357,6 +362,7 @@ void UserConfigBackend::loadConfig()
     updateField(this, m_bodyFontSize, jsonInt(configObject, QLatin1String("bodyFontSize"), 16), &UserConfigBackend::bodyFontSizeChanged);
     updateField(this, m_titleFontSize, jsonInt(configObject, QLatin1String("titleFontSize"), 20), &UserConfigBackend::titleFontSizeChanged);
     updateField(this, m_iconFontSize, jsonInt(configObject, QLatin1String("iconFontSize"), 18), &UserConfigBackend::iconFontSizeChanged);
+    updateField(this, m_accentColor, jsonString(configObject, QLatin1String("accentColor"), QStringLiteral("#0a84ff")), &UserConfigBackend::accentColorChanged);
 
     updateWatchedPaths();
 }

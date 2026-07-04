@@ -37,9 +37,9 @@ class StyleTokensBackend final : public QObject {
     Q_PROPERTY(QColor textSubtle READ textSubtle CONSTANT FINAL)
     Q_PROPERTY(QColor textDim READ textDim CONSTANT FINAL)
 
-    Q_PROPERTY(QColor accent READ accent CONSTANT FINAL)
-    Q_PROPERTY(QColor accentPressed READ accentPressed CONSTANT FINAL)
-    Q_PROPERTY(QColor accentSoft READ accentSoft CONSTANT FINAL)
+    Q_PROPERTY(QColor accent READ accent NOTIFY accentChanged FINAL)
+    Q_PROPERTY(QColor accentPressed READ accentPressed NOTIFY accentChanged FINAL)
+    Q_PROPERTY(QColor accentSoft READ accentSoft NOTIFY accentChanged FINAL)
     Q_PROPERTY(QColor success READ success CONSTANT FINAL)
     Q_PROPERTY(QColor warning READ warning CONSTANT FINAL)
     Q_PROPERTY(QColor danger READ danger CONSTANT FINAL)
@@ -130,4 +130,17 @@ public:
     int durationControl() const;
     int durationQuick() const;
     int durationStandard() const;
+
+    // ponytail: configurable accent color — derived accent/accentPressed/accentSoft update at runtime
+    Q_INVOKABLE void setAccentColor(const QString &hexColor);
+
+signals:
+    void accentChanged();
+
+private:
+    void deriveAccent(const QString &hexColor);
+
+    QColor m_accent = QColor(QStringLiteral("#0a84ff"));
+    QColor m_accentPressed = QColor(QStringLiteral("#0066d6"));
+    QColor m_accentSoft = QColor(QStringLiteral("#6ea8ff"));
 };
