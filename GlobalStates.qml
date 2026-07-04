@@ -32,7 +32,6 @@ Singleton {
     property bool workspaceShowNumbers: false
 
     onSidebarRightOpenChanged: {
-        console.log("[GlobalStates] sidebarRightOpen changed: " + root.sidebarRightOpen)
         if (GlobalStates.sidebarRightOpen) {
             Notifications.timeoutAll();
             Notifications.markAllRead();

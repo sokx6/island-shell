@@ -249,7 +249,6 @@ Item { // Bar content region
                 }
 
                 onPressed: {
-                    console.log("[Bar] rightSidebarButton onPressed: current=" + GlobalStates.sidebarRightOpen + " → " + !GlobalStates.sidebarRightOpen)
                     GlobalStates.sidebarRightOpen = !GlobalStates.sidebarRightOpen;
                 }
 

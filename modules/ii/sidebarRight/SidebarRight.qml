@@ -33,7 +33,6 @@ Scope {
         }
 
         onVisibleChanged: {
-            console.log("[SidebarRight] onVisibleChanged: " + visible)
             if (visible) {
                 GlobalFocusGrab.addDismissable(panelWindow);
             } else {
@@ -43,7 +42,6 @@ Scope {
         Connections {
             target: GlobalFocusGrab
             function onDismissed() {
-                console.log("[SidebarRight] GlobalFocusGrab dismissed → hide")
                 panelWindow.hide();
             }
         }
