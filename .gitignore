@@ -29,3 +29,4 @@ qmldir
 
 # Runtime
 *.log
+notes/
