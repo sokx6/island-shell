@@ -16,6 +16,10 @@ ContentPage {
             tooltip: Translation.translate("You can also manually edit cheatsheet.superKey")
             ConfigSelectionArray {
                 currentValue: Config.options.cheatsheet.superKey
+                // ponytail: standalone installs may not have end4's default
+                // JetBrains Mono NF, so use the Nerd Font present on this
+                // system when the configured family is still the missing one.
+                buttonTextFontFamily: Appearance.font.family.iconNerd === "JetBrains Mono NF" ? "FiraCode Nerd Font" : Appearance.font.family.iconNerd
                 onSelected: newValue => {
                     Config.options.cheatsheet.superKey = newValue;
                 }

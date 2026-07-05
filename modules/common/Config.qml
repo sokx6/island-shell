@@ -111,7 +111,7 @@ Singleton {
                     property string main: "Google Sans Flex"
                     property string numbers: "Google Sans Flex"
                     property string title: "Google Sans Flex"
-                    property string iconNerd: "JetBrains Mono NF"
+                    property string iconNerd: "FiraCode Nerd Font"
                     property string monospace: "JetBrains Mono NF"
                     property string reading: "Readex Pro"
                     property string expressive: "Space Grotesk"

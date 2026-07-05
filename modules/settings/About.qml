@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Widgets
 import qs.services
@@ -20,7 +21,10 @@ ContentPage {
             Layout.bottomMargin: 10
             IconImage {
                 implicitSize: 80
-                source: Quickshell.iconPath(SystemInfo.logo)
+                // ponytail: LOGO from os-release may be absent or missing from
+                // the system icon theme, so use our packaged distro SVG as
+                // fallback to avoid Quickshell's missing-icon checkerboard.
+                source: Quickshell.iconPath(SystemInfo.logo, SystemInfo.distroIcon)
             }
             ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter
@@ -87,19 +91,32 @@ ContentPage {
             spacing: 20
             Layout.topMargin: 10
             Layout.bottomMargin: 10
-            IconImage {
-                implicitSize: 80
-                source: Quickshell.iconPath("illogical-impulse")
+            Image {
+                Layout.preferredWidth: 80
+                Layout.preferredHeight: 80
+                // ponytail: use the local custom dotfiles avatar instead of
+                // the system illogical-impulse icon from a full end4 install.
+                source: "file:///home/locxl/Downloads/murasame.jpg"
+                fillMode: Image.PreserveAspectCrop
+                mipmap: true
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: Rectangle {
+                        width: 80
+                        height: 80
+                        radius: Appearance.rounding.normal
+                    }
+                }
             }
             ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter
                 // spacing: 10
                 StyledText {
-                    text: Translation.translate("illogical-impulse")
+                    text: "island-shell"
                     font.pixelSize: Appearance.font.pixelSize.title
                 }
                 StyledText {
-                    text: "https://github.com/end-4/dots-hyprland"
+                    text: "https://github.com/sokx6/island-shell"
                     font.pixelSize: Appearance.font.pixelSize.normal
                     textFormat: Text.MarkdownText
                     onLinkActivated: (link) => {
@@ -114,28 +131,6 @@ ContentPage {
             Layout.fillWidth: true
             spacing: 5
 
-            RippleButtonWithIcon {
-                materialIcon: "auto_stories"
-                mainText: Translation.translate("Documentation")
-                onClicked: {
-                    Qt.openUrlExternally("https://end-4.github.io/dots-hyprland-wiki/en/ii-qs/02usage/")
-                }
-            }
-            RippleButtonWithIcon {
-                materialIcon: "adjust"
-                materialIconFill: false
-                mainText: Translation.translate("Issues")
-                onClicked: {
-                    Qt.openUrlExternally("https://github.com/end-4/dots-hyprland/issues")
-                }
-            }
-            RippleButtonWithIcon {
-                materialIcon: "forum"
-                mainText: Translation.translate("Discussions")
-                onClicked: {
-                    Qt.openUrlExternally("https://github.com/end-4/dots-hyprland/discussions")
-                }
-            }
             RippleButtonWithIcon {
                 materialIcon: "favorite"
                 mainText: Translation.translate("Donate")

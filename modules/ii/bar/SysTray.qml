@@ -20,6 +20,10 @@ Item {
 
     property list<var> pinnedItems: TrayService.pinnedItems
     property list<var> unpinnedItems: TrayService.unpinnedItems
+    // ponytail: SystemTray.items can be non-empty while every item is filtered
+    // out of the visible tray. In that state the separator looked like a lone
+    // broken tray icon, so key it to the items this component actually shows.
+    readonly property bool hasVisibleItems: root.pinnedItems.length > 0 || (root.showOverflowMenu && root.unpinnedItems.length > 0)
     onUnpinnedItemsChanged: {
         if (unpinnedItems.length == 0) root.closeOverflowMenu();
     }
@@ -167,7 +171,7 @@ Item {
             font.pixelSize: Appearance.font.pixelSize.larger
             color: Appearance.colors.colSubtext
             text: "•"
-            visible: root.showSeparator && SystemTray.items.values.length > 0
+            visible: root.showSeparator && root.hasVisibleItems
         }
     }
 }

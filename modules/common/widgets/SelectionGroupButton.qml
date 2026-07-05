@@ -14,6 +14,7 @@ GroupButton {
     verticalPadding: 8
     bounce: false
     property string buttonIcon
+    property string buttonTextFontFamily: ""
     property bool leftmost: false
     property bool rightmost: false
     leftRadius: (toggled || leftmost) ? (height / 2) : Appearance.rounding.unsharpenmore
@@ -47,7 +48,7 @@ GroupButton {
 
             TextMetrics {
                 id: textMetrics
-                font.family: Appearance.font.family.main
+                font.family: root.buttonTextFontFamily.length > 0 ? root.buttonTextFontFamily : Appearance.font.family.main
                 text: "Abc"
             }
 
@@ -56,6 +57,7 @@ GroupButton {
                 anchors.centerIn: parent
                 color: root.toggled ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
                 text: root.buttonText
+                font.family: root.buttonTextFontFamily.length > 0 ? root.buttonTextFontFamily : defaultFont
             }
         }
     }

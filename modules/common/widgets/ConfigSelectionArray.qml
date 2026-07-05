@@ -22,6 +22,7 @@ Flow {
         },
     ]
     property var currentValue: null
+    property string buttonTextFontFamily: ""
 
     signal selected(var newValue)
 
@@ -45,6 +46,7 @@ Flow {
             rightmost: index === root.options.length - 1
             buttonIcon: modelData.icon || ""
             buttonText: modelData.displayName
+            buttonTextFontFamily: root.buttonTextFontFamily
             toggled: root.currentValue == modelData.value
             onClicked: {
                 root.selected(modelData.value);

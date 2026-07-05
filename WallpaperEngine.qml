@@ -13,6 +13,22 @@ Scope {
         return Config.options?.wallpaperEngine ?? null
     }
 
+    function configuredScreens(cfg) {
+        if (cfg.screens && cfg.screens.length > 0)
+            return cfg.screens
+
+        if (cfg.screenRoot && cfg.screenRoot.length > 0)
+            return [{ screen: cfg.screenRoot, background: cfg.background }]
+
+        // ponytail: when enabled with only a background id, run on every
+        // current monitor instead of falling back to linux-wallpaperengine's
+        // window preview mode.
+        return Quickshell.screens.map(screen => ({
+            screen: screen.name,
+            background: cfg.background
+        }))
+    }
+
     function shouldRun() {
         const cfg = settings()
         if (!cfg) return false
@@ -32,9 +48,7 @@ Scope {
 
         // screen-root: render as wallpaper layer on specified screen(s)
         // Args must follow --screen-root <screen> --bg <id> --scaling <mode> --clamp <mode>
-        const screens = (cfg.screens && cfg.screens.length > 0)
-            ? cfg.screens
-            : [{ screen: cfg.screenRoot ?? "", background: cfg.background }]
+        const screens = configuredScreens(cfg)
         for (const s of screens) {
             if (s.screen && s.screen.length > 0) {
                 args.push("--screen-root", s.screen)
@@ -48,7 +62,7 @@ Scope {
             }
         }
 
-        // fallback: if no screens configured, use background as positional arg
+        // fallback: if screen-root data is unavailable, use preview mode
         if (screens.length === 0 || !screens[0].screen) {
             if (cfg.scaling?.length > 0) args.push("--scaling", cfg.scaling)
             if (cfg.clamping?.length > 0) args.push("--clamp", cfg.clamping)
@@ -141,5 +155,11 @@ Scope {
         function onEnabledChanged() { refresh("config-enabled-changed") }
         function onBackgroundChanged() { refresh("config-background-changed") }
         function onScreenRootChanged() { refresh("config-screenRoot-changed") }
+        function onScreensChanged() { refresh("config-screens-changed") }
+    }
+
+    Connections {
+        target: Quickshell
+        function onScreensChanged() { refresh("quickshell-screens-changed") }
     }
 }
