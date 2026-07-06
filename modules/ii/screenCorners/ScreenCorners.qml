@@ -78,8 +78,18 @@ Scope {
                     implicitWidth: Config.options.sidebar.cornerOpen.cornerRegionWidth
                     implicitHeight: Config.options.sidebar.cornerOpen.cornerRegionHeight
                     hoverEnabled: true
+                    // ponytail: bar-edge guard — when the corner sits on the same
+                    // edge as the bar, hover-toggle (clickless / clicklessCornerEnd)
+                    // would fire over the bar (e.g. top-right corner over the
+                    // wifi/bt button area), opening the sidebar by accident.
+                    // Click-toggle (onPressed) still works.
+                    readonly property bool onBarEdge:
+                        !Config.options.bar.vertical &&
+                        ((cornerWidget.isTop && !Config.options.bar.bottom) ||
+                         (cornerWidget.isBottom && Config.options.bar.bottom))
                     onPositionChanged: {
                         if (!Config.options.sidebar.cornerOpen.clicklessCornerEnd) return;
+                        if (mouseArea.onBarEdge) return;
                         const verticalOffset = Config.options.sidebar.cornerOpen.clicklessCornerVerticalOffset;
                         const correctX = (cornerWidget.isRight && mouseArea.mouseX >= mouseArea.width - 2) || (cornerWidget.isLeft && mouseArea.mouseX <= 2);
                         const correctY = (cornerWidget.isTop && mouseArea.mouseY > verticalOffset || cornerWidget.isBottom && mouseArea.mouseY < mouseArea.height - verticalOffset);
@@ -87,7 +97,7 @@ Scope {
                             screenCorners.actionForCorner[cornerPanelWindow.corner]();
                     }
                     onEntered: {
-                        if (Config.options.sidebar.cornerOpen.clickless)
+                        if (Config.options.sidebar.cornerOpen.clickless && !mouseArea.onBarEdge)
                             screenCorners.actionForCorner[cornerPanelWindow.corner]();
                     }
                     onPressed: {

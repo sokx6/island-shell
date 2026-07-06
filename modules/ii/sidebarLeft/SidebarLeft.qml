@@ -80,7 +80,7 @@ Scope { // Scope
 
         if (active) {
             // ponytail: briefly raise the layer to Exclusive so Fcitx can bind
-            // its text input context, then return to OnDemand so outside clicks
+            // its text input context, then return to None so outside clicks
             // can reach HyprlandFocusGrab and close the sidebar.
             sidebarFocusGrabAddTimer.stop();
             root.sidebarFocusGrabSuspended = true;
@@ -149,10 +149,12 @@ Scope { // Scope
             exclusiveZone: root.pin ? sidebarWidth : 0
             implicitWidth: Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin
             WlrLayershell.namespace: "quickshell:sidebarLeft"
-            // ponytail: keep OnDemand normally so click-outside dismissal works,
-            // but use Exclusive while the AI input is active so Fcitx can commit
-            // Chinese preedit text into the layer-shell TextArea.
-            WlrLayershell.keyboardFocus: root.keyboardFocusExclusive ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand
+            // ponytail: None (not OnDemand) when not typing. OnDemand on every
+            // map steals keyboard focus → Fcitx show/hide loop + focus-grab
+            // oscillation (cursor/popup flicker). Exclusive only while the AI
+            // input owns focus (setKeyboardFocusExclusive). Escape-to-close still
+            // works via GlobalFocusGrab click-outside dismissal.
+            WlrLayershell.keyboardFocus: root.keyboardFocusExclusive ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             color: "transparent"
 
             anchors {
